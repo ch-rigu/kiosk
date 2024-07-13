@@ -1,0 +1,96 @@
+timestamp: 2024-07-04T22:41:42.401595
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "username" CHAR(512) UNIQUE,
+    "email" CHAR(512) UNIQUE,
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT
+);
+success!
+timestamp: 2024-07-04T22:41:42.409522
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tagpath" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2024-07-07T22:35:17.818582
+CREATE TABLE "itemsss"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rand_id" CHAR(512),
+    "name" CHAR(512),
+    "description" TEXT,
+    "price" INTEGER,
+    "stock" INTEGER
+);
+success!
+timestamp: 2024-07-07T22:36:01.466083
+CREATE TABLE "item"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rand_id" CHAR(512),
+    "name" CHAR(512),
+    "description" TEXT,
+    "price" INTEGER,
+    "stock" INTEGER
+);
+success!
+timestamp: 2024-07-07T22:36:01.471391
+CREATE TABLE "cart"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "cart_id" CHAR(512),
+    "item" TEXT
+);
+success!
+timestamp: 2024-07-10T12:43:58.084146
+CREATE TABLE "auth_user_tag_default"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tagpath" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2024-07-10T13:09:17.726990
+CREATE TABLE "groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "group_id" CHAR(512),
+    "name" CHAR(512),
+    "description" CHAR(512)
+);
+success!
+timestamp: 2024-07-10T13:09:17.746871
+ALTER TABLE "item" ADD "portada" CHAR(512);
+success!
+timestamp: 2024-07-10T13:28:07.797803
+ALTER TABLE "item" ADD "tags" TEXT;
+success!
+timestamp: 2024-07-11T23:17:23.467948
+ALTER TABLE "item" ADD "imagen1" CHAR(512);
+timestamp: 2024-07-11T23:17:23.475066
+ALTER TABLE "item" ADD "imagen2" CHAR(512);
+timestamp: 2024-07-11T23:17:23.480243
+ALTER TABLE "item" ADD "imagen3" CHAR(512);
+success!
+success!
+timestamp: 2024-07-11T23:19:17.254741
+ALTER TABLE "item" ADD "image1" CHAR(512);
+timestamp: 2024-07-11T23:19:17.265688
+ALTER TABLE "item" ADD "image2" CHAR(512);
+timestamp: 2024-07-11T23:19:17.274244
+ALTER TABLE "item" ADD "image3" CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

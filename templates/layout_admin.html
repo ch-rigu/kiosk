@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html class="route-index wf-nunito-n4-active wf-nunito-n7-active wf-active">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Bulma is a free, open source CSS framework based on Flexbox and built with Sass. It's 100% responsive, fully modular, and available for free.">
+
+    <title>Japan Kiosk</title>
+    <link rel="stylesheet" href="[[=URL('static','css/bulma.css')]]">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="[[=URL('static','logo_notext.png')]]">
+    <link rel="icon" type="image/png" href="[[=URL('static','logo_notext.png')]]" sizes="32x32">
+    <link rel="stylesheet" href="[[=URL('static','css/all.min.css')]]">
+
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:400,700" media="all"> -->
+
+  <script src="[[=URL('static','js/vue.global.js')]]"></script>
+
+<style>
+    body {
+        background-image: url('[[=URL('static','pattern.jpg')]]');
+        background-size: cover;
+    }
+    .product-card {
+      max-width: 300px;
+      margin: 20px auto;
+    }
+    .product-card img {
+      height: 200px;
+      object-fit: cover;
+    }
+</style>
+  [[block page_head]] [[end]]
+</head>
+
+<body >
+    [[include 'navbar.html']]
+    <div class="container">
+        <div id="app">
+
+            [[include]]
+        </div>
+
+      </div>
+
+
+    <!--Py4web utils -->
+    [[block page_scripts]]<!-- individual pages can add scripts here -->
+
+    <script>
+      search_codes_url = '[[#=XML(search_codes_url)]]'
+
+    </script>
+
+    <script src="[[=URL('static','js/axios.min.js')]]"></script>
+    <script>
+      [[include 'js/admin.js']]
+    </script>
+    <script src="[[=URL('static','js/utils.js')]]"></script>
+
+    [[end]]
+  </body>
+
+
+
+
+
+
+    </html>

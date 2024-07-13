@@ -1,0 +1,52 @@
+[[extend 'layout_admin.html']]
+
+<section class="section">
+  <div class="buttons">
+      <button class="button is-primary is-light js-modal-trigger"  data-target="modal-product">Primary</button>
+      <button class="button is-link is-light">Link</button>
+  </div>
+  <div class="box">
+      <h4>Productos</h4>
+
+    <table class="table is-striped is-hoverable is-fullwidth">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Image</th>
+            <th>Tags</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Example Row -->
+           [[for i in items:]]
+          <tr>
+            <td>[[#=i.rand_id]]</td>
+            <td>[[=i.name]]</td>
+            <td>[[=i.description]]</td>
+            <td>$ [[=i.price]]</td>
+            <td>[[=i.stock]]</td>
+            <td><img width="100" height="100" src="/kiosk/static/media/[[=i.image1]]" alt="Product Image"></td>
+            <td>[[=i.tags]]</td>
+          </tr>
+           [[pass]]
+          <!-- Repeat Rows as needed -->
+        </tbody>
+      </table>
+   </div>
+</section>
+
+<div class="modal" id="modal-product">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+      <div class="box">
+
+     [[=form_add_item]]
+      </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+
