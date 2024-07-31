@@ -37,7 +37,8 @@ db.define_table('item',
 
 db.define_table('cart',
                 Field('cart_id', 'string', requires=IS_NOT_EMPTY()),
-                Field('item', 'text', default='[]', requires=IS_NOT_EMPTY()),
+                Field('item_list', 'list:string', default='[]', requires=IS_NOT_EMPTY()),
+
                )
 
 

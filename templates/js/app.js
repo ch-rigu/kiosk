@@ -36,7 +36,7 @@ function focusOut(id) {
 const vue_app = Vue.createApp({
   data() {
     return {
-
+      cart_count: 0,
       colors: [['primary','is-primary'],
                ['link','is-link'],
                ['info','is-info'],
@@ -54,32 +54,81 @@ const vue_app = Vue.createApp({
                ['light','is-light is-light'],
               ],
       //items = [],
-      items: [{'name': 'error loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'error loading products'},
+      items: [{'name': 'loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'loading products'},
              ],
+      shopping_cart: [{'id':'','name': '', 'cantidad': '', 'price':'', 'image':''}],
 
     }
   },
-  methods: {
-    getItems(){
-        //prompt('',get_items_url)
-      //prompt(get_items_url,get_items_url)
-      axios.get(get_items_url)
-      .then(response => {
-        //alert(response.data.items)
-        //console.log(response.data.content.content);
-        this.items = response.data.items
-      })
+  computed: {
+        chunkedItems() {
+            return this.chunkArray(this.items, 3);
+        }
     },
+    methods: {
+        getItems() {
+            axios.get(get_items_url)
+            .then(response => {
+                this.items = response.data.items;
+            })
+            .catch(error => {
+                alert(error)
+                console.error(error);
+            });
+        },
+        chunkArray(array, chunkSize) {
+            const result = [];
+            for (let i = 0; i < array.length; i += chunkSize) {
+                result.push(array.slice(i, i + chunkSize));
+            }
+            return result;
+        },
+        add_to_cart(item_id){
+            axios.post(add_item_to_cart_url,{
+                   'item_id':item_id,
+                   })
+            .then(response => {
+                if (response.data.msg ==='added') {
+                    //this.cart_items.push(item_id)
+                    //alert(this.cart_items)
+                    this.cart_listing('count')
+                    //document.getElementById("cart_counter").innerText = this.cart_count
+                }
+                else {
+                    alert(response.data.msg)
+                }
+            })
+            .catch(error => {
+                alert(error);
+                console.log(error)}
+                  )
+        },
+        cart_listing(action){
+            axios.post(cart_list_url, {
+            'get':action})
+            .then(response => {
+                if (action === 'all') {
+                    this.shopping_cart =  response.data.items
+                } else {
+                    alert(response.data.items)
+                    //this.cart_count = response.data.items
+                    document.getElementById("cart_counter").innerText = response.data.items
+                }
+            })
+        },
 
 
-},
+    },
 
 beforeMount() {
   this.getItems();
 
+
+
 },
 
 mounted() {
+    this.cart_listing();
   //this.changeSize();
   //this.renderHorizontalBarChart();
   document.addEventListener('DOMContentLoaded', () => {

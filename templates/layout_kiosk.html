@@ -19,6 +19,23 @@
   <script src="[[=URL('static','js/vue.global.js')]]"></script>
 
 <style>
+
+
+    .has-background {
+        background-image: url('[[=URL('static','header2.png')]]'); /* Reemplaza con la ruta de tu imagen */
+        background-size: cover; /* Hace que la imagen cubra todo el área del <nav> */
+        background-repeat: no-repeat; /* Evita que la imagen se repita */
+        background-position: center; /* Centra la imagen */
+    }
+        @media (max-width: 768px) {
+        .nav-container {
+            height: auto; /* Ajusta la altura automáticamente en pantallas pequeñas */
+        }
+
+        .navbar {
+            height: auto;
+        }
+    }
     body {
         background-image: url('[[=URL('static','pattern.jpg')]]');
         background-size: cover;
@@ -31,27 +48,51 @@
       height: 200px;
       object-fit: cover;
     }
+    .overlay {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70px; /* Debe coincidir con el ancho de la imagen */
+    height: 130px; /* Debe coincidir con la altura de la imagen */
+}
+
+.number {
+    color: grey;
+    font-size: 24px;
+    font-weight: bold;
+}
+    .image-container {
+    position: relative;
+    display: inline-block;
+}
+
 </style>
   [[block page_head]] [[end]]
 </head>
 
 <body >
-    [[include 'navbar.html']]
+    <div id="app">
+        [[include 'navbar.html']]
     <div class="container">
-        <div id="app">
+
 
             [[include]]
-        </div>
+
 
       </div>
-
+    </div>
 
     <!--Py4web utils -->
     [[block page_scripts]]<!-- individual pages can add scripts here -->
 
     <script>
      get_items_url = '[[=XML(get_items_url)]]'
-
+     add_item_to_cart_url = '[[=XML(add_item_to_cart_url)]]'
+    cart_list_url = '[[=XML(cart_list_url)]]'
     </script>
 
     <script src="[[=URL('static','js/axios.min.js')]]"></script>

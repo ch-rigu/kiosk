@@ -1,7 +1,8 @@
-<nav class="navbar" role="navigation" aria-label="main navigation">
+
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <figure class="image is-64x64" onclick="javascript:window.location='[[=URL('index')]]'">
-        <img class="" src="[[=URL('static','logo_notext.png')]]">
+        <img class="" src="[[=URL('static','kitsune.png')]]">
       </figure>
 
       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -13,55 +14,20 @@
 
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a href="[[=URL('projects')]]" class="navbar-item"><i class="fas fa-folder"> </i> Projects</a>
-        <a href="[[=URL('tags_manager')]]" class="navbar-item"><i class="fas fa-tag"> </i> Codes</a>
-        <a href="[[=URL('tools')]]" class="navbar-item"><i class="fas fa-wrench"></i> Tools</a>
+        <a href="[[=URL('projects')]]" class="navbar-item"><!--<i class="fas fa-folder"> </i>--> </a>
+        <a href="[[=URL('tags_manager')]]" class="navbar-item"><!--<i class="fas fa-tag"> </i> --></a>
+        <a href="[[=URL('tools')]]" class="navbar-item"><!--<i class="fas fa-wrench"></i> --></a>
 
 
       </div>
 
       <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="dropdown">
-            <div class="dropdown-trigger">
-              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
-                <span>Click me</span>
-                <span class="icon is-small">
-                  <i class="fas fa-angle-down" aria-hidden="true"></i>
-                </span>
-              </button>
-            </div>
-            <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-              <div class="dropdown-content">
-                <a href="#" class="dropdown-item">
-                  Overview
-                </a>
-                <a href="#" class="dropdown-item">
-                  Modifiers
-                </a>
-                <a href="#" class="dropdown-item">
-                  Grid
-                </a>
-                <a href="#" class="dropdown-item">
-                  Form
-                </a>
-                <a href="#" class="dropdown-item">
-                  Elements
-                </a>
-                <a href="#" class="dropdown-item">
-                  Components
-                </a>
-                <a href="#" class="dropdown-item">
-                  Layout
-                </a>
-                <hr class="dropdown-divider">
-                <a href="#" class="dropdown-item">
-                  More
-                </a>
-              </div>
-            </div>
-          </div>
+        <div class="image-container js-modal-trigger"  data-target="modal-shopping-cart" @click="cart_listing('all')">
+            <img width="70px" height="130px" class="image" src="[[=URL('static','tori.png')]]">
+        <div class="overlay">
+            <span class="number" id="cart_counter">0</span>
         </div>
+       </div>
       </div>
     </div>
   </nav>

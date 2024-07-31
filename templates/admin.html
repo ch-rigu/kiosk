@@ -1,8 +1,8 @@
 [[extend 'layout_admin.html']]
-
+<hr>
 <section class="section">
   <div class="buttons">
-      <button class="button is-primary is-light js-modal-trigger"  data-target="modal-product">Primary</button>
+      <button class="button is-primary is-light js-modal-trigger"  data-target="modal-product">Agregar Producto</button>
       <button class="button is-link is-light">Link</button>
   </div>
   <div class="box">
@@ -18,19 +18,25 @@
             <th>Stock</th>
             <th>Image</th>
             <th>Tags</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <!-- Example Row -->
            [[for i in items:]]
           <tr>
-            <td>[[#=i.rand_id]]</td>
+            <td>[[=i.id]]</td>
             <td>[[=i.name]]</td>
             <td>[[=i.description]]</td>
             <td>$ [[=i.price]]</td>
             <td>[[=i.stock]]</td>
             <td><img width="100" height="100" src="/kiosk/static/media/[[=i.image1]]" alt="Product Image"></td>
             <td>[[=i.tags]]</td>
+              <td>
+                  <div class="buttons">
+                      <a class="button is-default is-small" href="[[=URL('edit_item', i.rand_id )]]">Edit</a>
+                  </div>
+              </td>
           </tr>
            [[pass]]
           <!-- Repeat Rows as needed -->
