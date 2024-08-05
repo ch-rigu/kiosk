@@ -63,6 +63,11 @@ def index():
 @action.uses(session, db, auth, url_signer.verify())
 def get_items():
     items = db(db.item).select().as_list()
+    for item in items:
+        item['images'] = [item['image1'], 
+                           item['image2'],
+                           item['image3']]
+    print(items)
     return dict(items=items)
 
 @action("cart_list")
@@ -138,7 +143,7 @@ def shopping_cart():
 
 @action("admin", method=["GET", "POST"])
 @action('admin/<path:path>', method=['POST', 'GET'])
-@action.uses("admin.html", session, db, auth.user, )
+@action.uses("admin.html", session, db, auth )
 def admin(path=None):
     form_items = Form(db.item, _formname='form_items')
     form_groups = Form(db.groups, _formname='form_groups')
@@ -201,7 +206,7 @@ def edit_form():
 """
 
 @action("edit_item/<id>", method=["GET", "POST"])
-@action.uses("form_edit.html", session, db, auth.user) #url_signer.verify())
+@action.uses("form_edit.html", session, db, auth) #url_signer.verify())
 def edit_item(id=None):
     record = db(db.item.rand_id == id).select().first()
     print(record)

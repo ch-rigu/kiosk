@@ -32,7 +32,8 @@ db.define_table('item',
                       requires=IS_EMPTY_OR(IS_FILE(extension=['png', 'jpeg', 'jpg']))),
                 Field('image3', 'upload', uploadfolder='./apps/kiosk/static/media', download_url=lambda image3: URL('static/media', image3),
                       requires=IS_EMPTY_OR(IS_FILE(extension=['png', 'jpeg', 'jpg']))),
-                Field('tags', 'list:string')
+                Field('tags', 'list:string'),
+                Field('score', 'list:integer', default='[]'),
                )
 
 db.define_table('cart',

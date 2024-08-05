@@ -1,20 +1,22 @@
 [[extend 'layout_kiosk.html']]
 
 <section class="section">
-        <div v-for="(row, rowIndex) in chunkedItems" :key="rowIndex" class="columns">
-            <div class="column is-one-third" v-for="item in row" :key="item.id">
+    <div class="columns is-multiline">
+
+    
+            <div class="column is-one-third" v-for="(item, position) in items" :key="item.id">
                 <div class="card product-card">
                     <div class="card-image">
-                        <figure class="image is-4by3">
+                        <figure class="image is-4by2">
                             <img :src="`/kiosk/static/media/${item.image1}`" alt="Product Image">
                         </figure>
                     </div>
-                    <div class="card-content">
+                    <div class="card-content js-modal-trigger" data-target="modal-product" @click="productModal(position)">
                         <div class="media">
                             <div class="media-content">
                                 <p class="title is-4">{{ item.name }}</p>
                                 <p class="subtitle is-6">$ {{ item.price }}</p>
-                                <p class="subtitle is-7">stock:  {{item.stock}} </p>
+                                <p class="subtitle is-7">stock: {{item.stock}} </p>
                             </div>
                         </div>
                         <div class="content">
@@ -29,40 +31,85 @@
                 </div>
             </div>
         </div>
-    </section>
+</section>
 
 <div class="modal" id="modal-shopping-cart">
   <div class="modal-background"></div>
-  <div class="modal-content">
-      <div class="box">
+    <div class="modal-content">
+        <div class="box">
 
-<h4>Carrito de compras</h4>
+        <h4>Carrito de compras</h4>
 
-    <table class="table is-striped is-hoverable is-fullwidth">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Product</th>
-            <th>Cantidad</th>
-            <th>Price</th>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Product</th>
+                <th>Cantidad</th>
+                <th>Price</th>
 
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Example Row -->
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Example Row -->
 
-          <tr v-for="item in shopping_cart" :key="item.id">
-            <td>{{item.id}} </td>
-            <td>{{item.name}}</td>
-            <td> {{item.cantidad}}</td>
-            <td>$ {{item.price}}</td>
-          </tr>
+            <tr v-for="item in shopping_cart" :key="item.id">
+                <td>{{item.id}} </td>
+                <td>{{item.name}}</td>
+                <td> {{item.cantidad}}</td>
+                <td>$ {{item.price}}</td>
+            </tr>
+            <hr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td><strong>Total</strong></td>
+                <td><strong>$ {{shopping_total}}</strong></td>
 
-          <!-- Repeat Rows as needed -->
-        </tbody>
-      </table>
+            <!-- Repeat Rows as needed -->
+            </tbody>
+        </table>
+        <div class="buttons" >
+            <button class="button is-primary"> Pagar ahora</button>
+        </div>
+    </div>
+    
    </div>
-      </div>
   </div>
-  <button class="modal-close is-large" aria-label="close"></button>
+  
+</div>
+
+
+<div class="modal" id="modal-product">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{{ product.name }}</p>
+            <button class="delete" aria-label="close" @click="closeModal"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="columns is-multiline">
+                <div class="column is-full-mobile is-two-thirds-tablet">
+                    <div class="carousel">
+                        <button class="carousel-button" @click="prevImage" :disabled="currentImageIndex === 0" aria-label="Anterior"><</button>
+                        <figure class="image">
+                            <img :src="`/kiosk/static/media/${product.images[currentImageIndex]}`" alt="Product Image" class="product-image"> 
+                        </figure>
+                        <button class="carousel-button" @click="nextImage" :disabled="currentImageIndex === product.images.length - 1" aria-label="Siguiente">></button>
+                    </div>
+                </div>
+                <div class="column">
+                    <h4 class="title is-4">{{ product.name }}</h4>
+                    <p class="description">{{ product.description }}</p>
+                    <p class="price">Price: ${{ product.price }}</p>
+                    <div class="buttons">
+                        <button class="button is-primary" @click="add_to_cart(product.rand_id)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- <footer class="modal-card-foot">
+            <button class="button is-success" @click="closeModal">Cerrar</button>
+        </footer> -->
+    </div>
 </div>
