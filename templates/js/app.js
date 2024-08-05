@@ -37,6 +37,7 @@ const vue_app = Vue.createApp({
   data() {
     return {
       cart_count: 0,
+      searchValue:'',
       colors: [['primary','is-primary'],
                ['link','is-link'],
                ['info','is-info'],
@@ -60,6 +61,7 @@ const vue_app = Vue.createApp({
       shopping_total: 0,
       show_product: {'name': 'loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'loading products'},
       currentImageIndex: 0,
+      loadingSearch: false,
       product: {
           name: 'Producto de Ejemplo',
           description: 'Esta es una descripción del producto. Ofrece características únicas y beneficios.',
@@ -77,6 +79,22 @@ const vue_app = Vue.createApp({
         }
     },
     methods: {
+        searchProduct(product) {
+            this.loadingSearch = true
+            axios.post(search_product_url, {
+            'query':this.searchValue,
+            })
+            .then(response => {
+              this.loadingSearch = false
+              this.items = response.data.items;
+              console.log(this.items)
+          })
+          .catch(error => {
+              this.loadingSearch = false
+              alert(error)
+            })
+
+        },
       nextImage() {
         if (this.currentImageIndex < this.product.images.length - 1) {
             this.currentImageIndex++;

@@ -38,7 +38,7 @@ def delcart():
     db(db.cart).delete()
     return 'ok'
 
-@action("index")
+@action("index", method=['GET'])
 @action.uses("index.html", session, db, auth, url_signer)
 def index():
     #print(dir(session.items()))
@@ -56,21 +56,42 @@ def index():
                 get_items_url=URL("get_items", signer=url_signer),
                 add_item_to_cart_url=URL("add_item_to_cart", signer=url_signer),
                 cart_list_url = URL("cart_list", signer=url_signer),
+                search_product_url = URL("search_product", signer=url_signer),
                )
 
-
-@action("get_items")
+@action("search_product", method=['POST'])
 @action.uses(session, db, auth, url_signer.verify())
-def get_items():
-    items = db(db.item).select().as_list()
+def search_product():
+    if 'query' not in request.forms.keys():
+        return dict(error='invalid request')
+
+    print('serching...')
+
+    value = request.forms.get('query')
+    print(value)
+    if value == '':
+        items = db(db.item).select().as_list()
+    else:
+        items = db(db.item.name.contains(value)).select().as_list()
     for item in items:
-        item['images'] = [item['image1'], 
+        item['images'] = [item['image1'],
                            item['image2'],
                            item['image3']]
     print(items)
     return dict(items=items)
 
-@action("cart_list")
+@action("get_items", method=['GET'])
+@action.uses(session, db, auth, url_signer.verify())
+def get_items():
+    items = db(db.item).select().as_list()
+    for item in items:
+        item['images'] = [item['image1'],
+                           item['image2'],
+                           item['image3']]
+    #print(items)
+    return dict(items=items)
+
+@action("cart_list", method=['GET'])
 @action.uses(session, db, auth, url_signer.verify())
 def cart_list():
     if request.forms.get('get') == 'all':
@@ -87,13 +108,13 @@ def cart_list():
         if cart['item_list'] == None:
             cart.update_record(item_list=[])
             cart.update(item_list=[])
-        print(f'cart items:{cart} ')
+        #print(f'cart items:{cart} ')
 
 
         return dict(items=len(cart['item_list']))
 
 
-@action("add_item_to_cart")
+@action("add_item_to_cart", method=['POST'])
 @action.uses(session, db, auth, url_signer.verify())
 def add_item_to_cart():
     if not request.forms.get('item_id'):
@@ -112,7 +133,15 @@ def add_item_to_cart():
         #update cart
         cart_items = db(db.cart.cart_id == session['uuid']).select().first()
         print(cart_items)
-        if cart_items['item_list'] == None:
+        if not cart_items:
+            print(f"creating cart: {session['uuid']}- item: {item_id}")
+            id = db.cart.insert(cart_id=session['uuid'],
+                               item_list=[item_id]
+                               )
+
+            print(f'inserted item: {item_id}')
+
+        elif cart_items['item_list'] == None:
             print(f"inserting in cart: {session['uuid']}- item: {item_id}")
             cart_items.update_record(item_list=[item_id])
             print(f'inserted item: {item_id}')

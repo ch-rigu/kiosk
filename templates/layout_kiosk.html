@@ -30,31 +30,31 @@
         max-width: 900px;
         margin: 0 auto;
     }
-    
+
     .modal-card-head, .modal-card-foot {
         padding: 15px;
     }
-    
+
     .modal-card-body {
         flex-grow: 1;
         overflow-y: auto;
         padding: 20px;
     }
-    
+
     .carousel {
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100%;
     }
-    
+
     .product-image {
         width: 100%;
         height: auto;
         max-height: 50vh;
         object-fit: contain;
     }
-    
+
     .carousel-button {
         background: none;
         border: none;
@@ -63,29 +63,29 @@
         color: #3273dc;
         transition: color 0.3s;
     }
-    
+
     .carousel-button:hover {
         color: #00d1b2;
     }
-    
+
     .description {
         margin-bottom: 1rem;
     }
-    
+
     .price {
         font-weight: bold;
         margin-bottom: 1rem;
     }
-    
+
     @media screen and (max-width: 768px) {
         .modal-card {
             width: 95vw;
         }
-        
+
         .columns {
             flex-direction: column;
         }
-        
+
         .column {
             width: 100%;
         }
@@ -107,7 +107,7 @@
       </div>
       [[include 'footer.html']]
     </div>
-    
+
 
     <!--Py4web utils -->
     [[block page_scripts]]<!-- individual pages can add scripts here -->
@@ -116,6 +116,7 @@
      get_items_url = '[[=XML(get_items_url)]]'
      add_item_to_cart_url = '[[=XML(add_item_to_cart_url)]]'
     cart_list_url = '[[=XML(cart_list_url)]]'
+    search_product_url = '[[=XML(search_product_url)]]'
     </script>
 
     <script src="[[=URL('static','js/axios.min.js')]]"></script>

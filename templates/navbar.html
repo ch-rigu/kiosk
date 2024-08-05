@@ -22,12 +22,15 @@
       <div class="navbar-end">
           <!-- Aquí se añade el campo de búsqueda -->
           <div class="navbar-item">
+              <div class="field has-addons">
               <div class="control has-icons-right">
-                  <input class="input" type="text" placeholder="Buscar...">
-                  <span class="icon is-small is-right">
-                      <i class="fas fa-search"></i> <!-- Asegúrate de tener Font Awesome enlazado si usas este icono -->
+                  <input class="input" type="text" placeholder="Buscar..." v-model="searchValue"  @keyup.enter="searchProduct(searchValue)" >
+                  <span class="icon is-right">
+                      <i v-show="!loadingSearch" class="fas fa-search"></i>
+                      <i v-show="loadingSearch" class="fas fa-spinner fa-pulse"></i>
                   </span>
               </div>
+            </div>
           </div>
           <div class="navbar-item">
               <div class="field is-grouped">

@@ -3,7 +3,7 @@
 <section class="section">
     <div class="columns is-multiline">
 
-    
+
             <div class="column is-one-third" v-for="(item, position) in items" :key="item.id">
                 <div class="card product-card">
                     <div class="card-image">
@@ -25,58 +25,79 @@
                     </div>
                     <footer class="card-footer" style="padding:20px">
                         <div class="block">
-                            <button class="button is-primary" @click="add_to_cart(item.rand_id)">Add to Cart</button>
+                            <button class="button is-primary is-light" @click="add_to_cart(item.rand_id)">Add to Cart</button>
                         </div>
                     </footer>
                 </div>
             </div>
         </div>
+    <nav class="pagination is-centered is-white" role="navigation" aria-label="pagination">
+  <a href="#" class="pagination-previous ">Previous</a>
+  <a href="#" class="pagination-next">Next page</a>
+  <ul class="pagination-list">
+    <li><a href="#" class="pagination-link" aria-label="Goto page 1">1</a></li>
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li><a href="#" class="pagination-link" aria-label="Goto page 45">45</a></li>
+    <li>
+      <a
+        class="pagination-link is-current"
+        aria-label="Page 46"
+        aria-current="page"
+        >46</a
+      >
+    </li>
+    <li><a href="#" class="pagination-link" aria-label="Goto page 47">47</a></li>
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    <li><a href="#" class="pagination-link" aria-label="Goto page 86">86</a></li>
+  </ul>
+</nav>
 </section>
+
 
 <div class="modal" id="modal-shopping-cart">
   <div class="modal-background"></div>
     <div class="modal-content">
         <div class="box">
 
-        <h4>Carrito de compras</h4>
+            <h4>Carrito de compras</h4>
 
-        <table class="table is-striped is-hoverable is-fullwidth">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Product</th>
-                <th>Cantidad</th>
-                <th>Price</th>
+            <table class="table is-striped is-hoverable is-fullwidth">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Cantidad</th>
+                    <th>Price</th>
 
-            </tr>
-            </thead>
-            <tbody>
-            <!-- Example Row -->
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Example Row -->
 
-            <tr v-for="item in shopping_cart" :key="item.id">
-                <td>{{item.id}} </td>
-                <td>{{item.name}}</td>
-                <td> {{item.cantidad}}</td>
-                <td>$ {{item.price}}</td>
-            </tr>
-            <hr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td><strong>Total</strong></td>
-                <td><strong>$ {{shopping_total}}</strong></td>
+                <tr v-for="item in shopping_cart" :key="item.id">
+                    <td>{{item.id}} </td>
+                    <td>{{item.name}}</td>
+                    <td> {{item.cantidad}}</td>
+                    <td>$ {{item.price}}</td>
+                </tr>
+                <hr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><strong>Total</strong></td>
+                    <td><strong>$ {{shopping_total}}</strong></td>
 
-            <!-- Repeat Rows as needed -->
-            </tbody>
-        </table>
+                <!-- Repeat Rows as needed -->
+                </tbody>
+            </table>
         <div class="buttons" >
             <button class="button is-primary"> Pagar ahora</button>
         </div>
-    </div>
-    
+        </div>
+
    </div>
   </div>
-  
+
 </div>
 
 
@@ -91,9 +112,9 @@
             <div class="columns is-multiline">
                 <div class="column is-full-mobile is-two-thirds-tablet">
                     <div class="carousel">
-                        <button class="carousel-button" @click="prevImage" :disabled="currentImageIndex === 0" aria-label="Anterior"><</button>
+                        <button class="carousel-button" @click="prevImage" :disabled="currentImageIndex === 0" aria-label="Anterior"></button>
                         <figure class="image">
-                            <img :src="`/kiosk/static/media/${product.images[currentImageIndex]}`" alt="Product Image" class="product-image"> 
+                            <img :src="`/kiosk/static/media/${product.images[currentImageIndex]}`" alt="Product Image" class="product-image">
                         </figure>
                         <button class="carousel-button" @click="nextImage" :disabled="currentImageIndex === product.images.length - 1" aria-label="Siguiente">></button>
                     </div>
@@ -107,6 +128,7 @@
                     </div>
                 </div>
             </div>
+
         </section>
         <!-- <footer class="modal-card-foot">
             <button class="button is-success" @click="closeModal">Cerrar</button>
