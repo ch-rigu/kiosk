@@ -26,7 +26,49 @@ function focusOut(id) {
 
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Functions to open and close a modal
+  function openModal($el) {
+    $el.classList.add('is-active');
+  }
 
+  function closeModal($el) {
+    $el.classList.remove('is-active');
+  }
+
+  function closeAllModals() {
+    (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+      closeModal($modal);
+    });
+  }
+
+  // Add a click event on buttons to open a specific modal
+  (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+    const modal = $trigger.dataset.target;
+    const $target = document.getElementById(modal);
+
+    $trigger.addEventListener('click', () => {
+      openModal($target);
+    });
+  });
+
+  // Add a click event on various child elements to close the parent modal
+  (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+    const $target = $close.closest('.modal');
+
+    $close.addEventListener('click', () => {
+      closeModal($target);
+    });
+  });
+
+
+  // Add a keyboard event to close all modals
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Escape') {
+      closeAllModals();
+    }
+  });
+  });
 
 
 
@@ -57,7 +99,7 @@ const vue_app = Vue.createApp({
       //items = [],
       items: [{'name': 'loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'loading products'},
              ],
-      shopping_cart: [{'id':'','name': '', 'cantidad': '', 'price':'', 'image':''}],
+      shopping_cart: [{'rand_id':'','name': '', 'quantity': '', 'price':'', 'image':''}],
       shopping_total: 0,
       show_product: {'name': 'loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'loading products'},
       currentImageIndex: 0,
@@ -160,19 +202,58 @@ const vue_app = Vue.createApp({
             'get':action})
             .then(response => {
                 if (action === 'all') {
-                    this.shopping_cart =  response.data.items
-                    for (let i = 0; i < this.shopping_cart.length; i++) {
-                        this.shopping_total += this.shopping_cart[i].price
+                    this.shopping_cart =  response.data
+                    for (const [key, value] of Object.entries(this.shopping_cart)) {
+                      
+                      this.shopping_total += value.final_price
+
                     }
+                 
+                
+
                 } else {
-                    alert(response.data.items)
+                    //alert(response.data.items)
                     //this.cart_count = response.data.items
                     document.getElementById("cart_counter").innerText = response.data.items
                 }
+                
             })
         },
-
-
+        
+        toCurrency(value) {
+          if (typeof value !== "number") {
+            return value;
+          }
+          const formatter = new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP'
+          });
+          return formatter.format(value);
+        },
+        deleteItemCart(item_id){
+          console.log(item_id)
+          console.log(this.shopping_cart)
+          
+          axios.post(delete_item_cart_url,{
+                  'item_id':item_id,
+                  })
+          .then(response => {
+              if (response.data.msg ==='deleted') {
+                delete this.shopping_cart[item_id]
+                  //alert(this.cart_items)
+                this.cart_listing('count')
+                  
+                  //document.getElementById("cart_counter").innerText = this.cart_count
+              }
+              else {
+                  alert(response.data.msg)
+              }
+          })
+          .catch(error => {
+              alert(error);
+              console.log(error)}
+                )
+        },
     },
 
 beforeMount() {
@@ -186,49 +267,7 @@ mounted() {
     this.cart_listing();
   //this.changeSize();
   //this.renderHorizontalBarChart();
-  document.addEventListener('DOMContentLoaded', () => {
-    // Functions to open and close a modal
-    function openModal($el) {
-      $el.classList.add('is-active');
-    }
-
-    function closeModal($el) {
-      $el.classList.remove('is-active');
-    }
-
-    function closeAllModals() {
-      (document.querySelectorAll('.modal') || []).forEach(($modal) => {
-        closeModal($modal);
-      });
-    }
-
-    // Add a click event on buttons to open a specific modal
-    (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
-      const modal = $trigger.dataset.target;
-      const $target = document.getElementById(modal);
-
-      $trigger.addEventListener('click', () => {
-        openModal($target);
-      });
-    });
-
-    // Add a click event on various child elements to close the parent modal
-    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
-      const $target = $close.closest('.modal');
-
-      $close.addEventListener('click', () => {
-        closeModal($target);
-      });
-    });
-
-
-    // Add a keyboard event to close all modals
-    document.addEventListener('keydown', (event) => {
-      if (event.code === 'Escape') {
-        closeAllModals();
-      }
-    });
-    });
+  
 },
 
 });

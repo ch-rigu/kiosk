@@ -24,7 +24,7 @@ db.define_table('item',
                 Field('rand_id', 'string', requires=IS_NOT_EMPTY()),
                 Field('name', 'string', requires=IS_NOT_EMPTY()),
                 Field('description', 'text', default=''),
-                Field('price', 'integer', requires=IS_NOT_EMPTY()),
+                
                 Field('stock', 'integer', requires=IS_NOT_EMPTY()),
                 Field('image1', 'upload', uploadfolder='./apps/kiosk/static/media',download_url=lambda image1: URL('static/media', image1),
                       requires=IS_EMPTY_OR(IS_FILE(extension=['png', 'jpg', 'jpeg']))),
@@ -34,14 +34,18 @@ db.define_table('item',
                       requires=IS_EMPTY_OR(IS_FILE(extension=['png', 'jpeg', 'jpg']))),
                 Field('tags', 'list:string'),
                 Field('score', 'list:integer', default='[]'),
+                Field('price', 'integer', default=0, requires=IS_NOT_EMPTY()),
+                Field('discount', 'integer', default=0, requires=IS_NOT_EMPTY()),
+                Field('final_price', compute=lambda r: r.price - (r.price * r.discount) / 100)
                )
+
+# db.item.final_price.writable=False
 
 db.define_table('cart',
                 Field('cart_id', 'string', requires=IS_NOT_EMPTY()),
                 Field('item_list', 'list:string', default='[]', requires=IS_NOT_EMPTY()),
 
                )
-
 
 
 

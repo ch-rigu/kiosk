@@ -57,6 +57,7 @@ def index():
                 add_item_to_cart_url=URL("add_item_to_cart", signer=url_signer),
                 cart_list_url = URL("cart_list", signer=url_signer),
                 search_product_url = URL("search_product", signer=url_signer),
+                delete_item_cart_url = URL("delete_item_cart", signer=url_signer),
                )
 
 @action("search_product", method=['POST'])
@@ -91,16 +92,28 @@ def get_items():
     #print(items)
     return dict(items=items)
 
-@action("cart_list", method=['GET'])
+@action("cart_list", method=['POST'])
 @action.uses(session, db, auth, url_signer.verify())
 def cart_list():
     if request.forms.get('get') == 'all':
         items = db(db.cart.cart_id == session['uuid']).select().first()
         cart_items = []
+        cart_items_grouped = {}
         for item in items['item_list']:
+            
             i = db(db.item.rand_id == item).select().first()
-            cart_items.append({'id':i.id, 'name': i.name, 'price':i.price})
-        return dict(items=cart_items)
+            if i['rand_id'] in cart_items_grouped.keys():
+                cart_items_grouped[i['rand_id']]['quantity'] += 1
+                cart_items_grouped[i['rand_id']]['final_price'] += i['price']
+            else:
+                cart_items_grouped[i['rand_id']] = {'rand_id':i.rand_id, 'name': i.name, 'quantity': 1,
+                                                 'final_price': i.price, 'unit_price': i.price,}
+                #
+            #cart_items.append(cart_items_grouped)
+
+
+        return cart_items_grouped
+    
     else:
         cart = db(db.cart.cart_id == session['uuid']).select().first()
 
@@ -165,6 +178,26 @@ def shopping_cart():
         return 'missing session'
 
     return dict()
+
+
+@action("delete_item_cart", method=['POST'])
+@action.uses(session, db, auth, url_signer.verify())
+def delete_item_cart():
+    if not request.forms.get('item_id'):
+        return 'missing item id'
+    item_id = request.forms.get('item_id')
+    if len(item_id) != 36:
+        return 'invalid item id'
+    cart = db(db.cart.cart_id == session['uuid']).select().first()
+    if not cart:
+        return 'cart not found'
+    items = cart['item_list']
+    result_list = [x for x in items if x != item_id]
+  
+
+    cart.update_record(item_list=result_list)
+    
+    return dict(msg='deleted')
 
 
 
