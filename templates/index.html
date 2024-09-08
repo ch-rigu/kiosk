@@ -1,48 +1,55 @@
 [[extend 'layout_kiosk.html']]
 
 <section class="section">
-    <div class="columns is-multiline">
-
-
-        <div class="column is-one-third" v-for="(item, position) in items" :key="item.id">
-            <div class="card product-card">
-                <div class="card-image">
-                  <figure class="image is-4by2">
-                    <img :src="`/kiosk/static/media/${item.image1}`" alt="Product Image" @click="productModal(position)">
-                    <span class="tag is-danger is-medium is-light" style="position: absolute; top: 10px; right: 10px;" v-if="item.discount > 0">
-                      {{ item.discount }}% OFF
-                    </span>
+  <div class="columns is-multiline">
+      <div class="column is-one-third" v-for="(product, position) in products" :key="product.id">
+          <div class="card product-card">
+              <div class="card-image">
+                  <figure class="image is-4by2" style="cursor: pointer;">
+                      <img :src="`/kiosk/static/media/${product.image1}`" alt="Product Image" @click="productModal(position)">
+                      <span class="tag is-danger is-medium is-light" style="position: absolute; top: 10px; right: 10px;" v-if="product.discount > 0">
+                          {{ product.discount }}% OFF
+                      </span>
                   </figure>
-                </div>
-                <div class="card-content js-modal-trigger" data-target="modal-product" >
-                  <div class="media">
-                    <div class="media-content">
-                      <p class="title is-4">{{ item.name }}</p>
-                      <p class="subtitle is-6">
-                        <span class="has-text-grey-light" style="text-decoration: line-through;" v-if="item.discount">
-                          $ {{ item.originalPrice }}
-                        </span>
-                        {{toCurrency(item.price) }}
-                      </p>
-                      <p class="subtitle is-7">Stock: {{ item.stock }}</p>
-                    </div>
-                  </div>
-                  <!-- <div class="content">
-                    {{ item.description }}
-                  </div> -->
-                 
-                </div>
-                <footer class="card-footer" style="padding:20px">
-                  <div class="block">
-                    <button class="button is-primary is-light" @click="add_to_cart(item.rand_id, quantity)">
-                      Add to Cart
-                    </button>
-                  </div>
-                </footer>
               </div>
+              <div class="card-content js-modal-trigger" data-target="modal-product">
+                  <div class="media">
+                      <div class="media-content">
+                          <p class="title is-4">{{ product.name }}</p>
+                          <p class="subtitle is-6">
+                              <span class="has-text-grey-light" style="text-decoration: line-through;" v-if="product.discount">
+                                  {{toCurrency(product.price) }}
+                              </span>
+                              {{toCurrency(product.final_price) }}
+                          </p>
+                          <p class="subtitle is-7">Stock: {{ product.stock }}</p>
+                          <!-- Inline Quantity Select Input using Bulma -->
+                          <!-- <div class="field has-addons">
+                              <div class="control">
+                                  <label class="label" style="margin-right: 10px;">Cantidad</label>
+                              </div>
+                              <div class="control">
+                                  <div class="select">
+                                      <select v-model="product.selectedQuantity">
+                                          <option v-for="n in product.stock" :key="n" :value="n">{{ n }}</option>
+                                      </select>
+                                  </div>
+                              </div>
+                          </div> -->
+                      </div>
+                  </div>
+              </div>
+              <footer class="card-footer" style="padding:20px">
+                  <div class="block">
+                      <button class="button is-primary is-light" @click="add_to_cart(product.rand_id, product.selectedQuantity)">
+                          <i class="fas fa-cart-shopping"></i>
+                          Agregar al carrito
+                      </button>
+                  </div>
+              </footer>
           </div>
-        </div>
-    
+      </div>
+  </div>
 </section>
 
 
@@ -67,12 +74,12 @@
                 <tbody>
                 <!-- Example Row -->
 
-                <tr v-for="item in shopping_cart" :key="item.id">
-                    <td>{{item.id}} </td>
-                    <td>{{item.name}}</td>
-                    <td> {{item.quantity}}</td>
-                    <td>{{toCurrency(item.final_price)}}</td>
-                    <td><button @click="deleteItemCart(item.rand_id)" class="button is-danger is-small is-light"><i class="fas fa-trash"></i> </button> </td>
+                <tr v-for="product in shopping_cart" :key="product.id">
+                    <td>{{product.id}} </td>
+                    <td>{{product.name}}</td>
+                    <td> {{product.quantity}}</td>
+                    <td>{{toCurrency(product.final_price)}}</td>
+                    <td><button @click="deleteproductCart(product.product_id)" class="button is-danger is-small is-light"><i class="fas fa-trash"></i> </button> </td>
                 </tr>
                 <hr>
                 <tr>
@@ -84,9 +91,10 @@
                 <!-- Repeat Rows as needed -->
                 </tbody>
             </table>
-        <div class="buttons" >
-            <button class="button is-primary"> Pagar ahora</button>
+        <div class="has-text-right">
+            <a class="button is-success has-text-light" :href="pay_now_url"> Pagar ahora</a>
         </div>
+        
         </div>
 
    </div>
@@ -120,9 +128,12 @@
                           </span>
                     </h4> 
                     <p class="description">{{ product.description }}</p>
-                    <p class="price">Price: ${{ product.price }}</p>
+                    <p class="price">Precio ${{ product.price }}</p>
                     <div class="buttons">
-                        <button class="button is-primary" @click="add_to_cart(product.rand_id)">Add to Cart</button>
+                        <button class="button is-primary is-light" @click="add_to_cart(product.rand_id, product.selectedQuantity)">
+                            <i class="fas fa-cart-shopping"></i>
+                            Agregar al carrito
+                        </button>
                     </div>
                 </div>
             </div>

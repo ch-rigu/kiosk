@@ -41,23 +41,14 @@ def delcart():
 @action("index", method=['GET'])
 @action.uses("index.html", session, db, auth, url_signer)
 def index():
-    #print(dir(session.items()))
-    try:
-        print(db(db.cart.cart_id == session['uuid']).select())
-        if not db(db.cart.cart_id == session['uuid']).select().first():
-            db.cart.insert(
-                        cart_id=session['uuid'],
-                        item_list=[])
-    except:
-        pass
-    #else:
-    #    db(db.cart.cart_id == session['uuid']).update(item_list=[])
+
     return dict(
-                get_items_url=URL("get_items", signer=url_signer),
+                get_products_url=URL("get_products", signer=url_signer),
                 add_item_to_cart_url=URL("add_item_to_cart", signer=url_signer),
                 cart_list_url = URL("cart_list", signer=url_signer),
                 search_product_url = URL("search_product", signer=url_signer),
                 delete_item_cart_url = URL("delete_item_cart", signer=url_signer),
+                pay_now_url = URL("pay_now", signer=url_signer),
                )
 
 @action("search_product", method=['POST'])
@@ -71,9 +62,9 @@ def search_product():
     value = request.forms.get('query')
     print(value)
     if value == '':
-        items = db(db.item).select().as_list()
+        items = db(db.product).select().as_list()
     else:
-        items = db(db.item.name.contains(value)).select().as_list()
+        items = db(db.product.name.contains(value)).select().as_list()
     for item in items:
         item['images'] = [item['image1'],
                            item['image2'],
@@ -81,95 +72,96 @@ def search_product():
     print(items)
     return dict(items=items)
 
-@action("get_items", method=['GET'])
+@action("get_products", method=['GET'])
 @action.uses(session, db, auth, url_signer.verify())
-def get_items():
-    items = db(db.item).select().as_list()
-    for item in items:
-        item['images'] = [item['image1'],
-                           item['image2'],
-                           item['image3']]
+def get_products():
+    products = db(db.product).select().as_list()
+    for product in products:
+        product['images'] = [product['image1'],
+                           product['image2'],
+                           product['image3']]
     #print(items)
-    return dict(items=items)
+    return dict(products=products)
 
 @action("cart_list", method=['POST'])
 @action.uses(session, db, auth, url_signer.verify())
 def cart_list():
-    if request.forms.get('get') == 'all':
-        items = db(db.cart.cart_id == session['uuid']).select().first()
-        cart_items = []
-        cart_items_grouped = {}
-        for item in items['item_list']:
-            
-            i = db(db.item.rand_id == item).select().first()
-            if i['rand_id'] in cart_items_grouped.keys():
-                cart_items_grouped[i['rand_id']]['quantity'] += 1
-                cart_items_grouped[i['rand_id']]['final_price'] += i['price']
-            else:
-                cart_items_grouped[i['rand_id']] = {'rand_id':i.rand_id, 'name': i.name, 'quantity': 1,
-                                                 'final_price': i.price, 'unit_price': i.price,}
-                #
-            #cart_items.append(cart_items_grouped)
+    if not request.json:
+        return dict(error='invalid request')
+    if not request.json.get('get'):
+        return dict(error='missing action')
+    action = request.json.get('get')
+    products = db(db.cart.cart_id == session['uuid']).select()
+    product_cart = {}
+    if action == 'all':
+        
+        for product in products:
+            p = db(db.product.rand_id == product['product_id']).select(db.product.final_price,db.product.image1,db.product.name).first()
+            #print(p)
+            product['final_price'] = p['final_price']
+            product['image'] = URL('static/media',p['image1'])
+            product['name'] = p['name']
+            product_cart[product['product_id']] = product
 
-
-        return cart_items_grouped
-    
+        return dict(products=product_cart)
     else:
-        cart = db(db.cart.cart_id == session['uuid']).select().first()
+        elements = 0
+        for product in products:
+            elements += product['quantity']
+            
+        return dict(products=elements)
 
-
-        if cart['item_list'] == None:
-            cart.update_record(item_list=[])
-            cart.update(item_list=[])
-        #print(f'cart items:{cart} ')
-
-
-        return dict(items=len(cart['item_list']))
+    
 
 
 @action("add_item_to_cart", method=['POST'])
 @action.uses(session, db, auth, url_signer.verify())
 def add_item_to_cart():
-    if not request.forms.get('item_id'):
-        print('missing item id')
-        return 'missing item id'
-    item_id = request.forms.get('item_id')
-    if len(item_id) != 36:
-        print('invalid item id')
-        return 'invalid item id'
+    if not request.forms.get('product_id'):
+        print('missing product id')
+        return dict(msg="nok", error='invalid item')
+    product_id = request.forms.get('product_id')
+    if len(product_id) != 36:
+        return dict(msg="nok", error='invalid item id')
 
     #check if item exist and if there is stock
-    item = db((db.item.rand_id == item_id) & (db.item.stock > 0)).select().first()
+    product = db((db.product.rand_id == product_id) & (db.product.stock > 0)).select().first()
+    product_stock = product['stock']
+    if not product:
+        return dict(msg="nok", error='invalid item or out of stock')
 
-    if item:
-        #print('updating cart')
-        #update cart
-        cart_items = db(db.cart.cart_id == session['uuid']).select().first()
-        print(cart_items)
-        if not cart_items:
-            print(f"creating cart: {session['uuid']}- item: {item_id}")
-            id = db.cart.insert(cart_id=session['uuid'],
-                               item_list=[item_id]
-                               )
+    #update cart
+    cart_items = db(db.cart.cart_id == session['uuid']).isempty()
 
-            print(f'inserted item: {item_id}')
+    if cart_items:
+        
+        
+        print(f"creating cart: {session['uuid']}- item: {product_id}")
+        
+        db.cart.insert(cart_id=session['uuid'],
+                            product_id=product_id,
+                            quantity=1
+                            )
 
-        elif cart_items['item_list'] == None:
-            print(f"inserting in cart: {session['uuid']}- item: {item_id}")
-            cart_items.update_record(item_list=[item_id])
-            print(f'inserted item: {item_id}')
+        print(f'inserted item: {product_id}')
 
-        else:
-            print(cart_items['item_list'], item_id)
-            updated_items = cart_items['item_list'] + [item_id]
-            print("updated ite")
-            print(updated_items)
-            cart_items.update_record(item_list=updated_items)
 
-        return dict(msg="added")
     else:
-        print('invalid item or out of stock')
-        return 'invalid item or out of stock'
+        item = db((db.cart.cart_id == session['uuid']) & (db.cart.product_id == product_id)).select().first()
+        
+        
+        if item:
+            if item.quantity >= product_stock:
+                return dict(error='no hay suficiente stock')
+            
+            item.update_record(quantity=item['quantity'] + 1)
+        else:
+            db.cart.insert(cart_id=session['uuid'],
+                            product_id=product_id,
+                            quantity=1
+                            )
+        
+    return dict(msg="added", error='')
 
 @action("shopping_cart")
 @action.uses('shopping_cart.html',session, db, auth)
@@ -183,22 +175,30 @@ def shopping_cart():
 @action("delete_item_cart", method=['POST'])
 @action.uses(session, db, auth, url_signer.verify())
 def delete_item_cart():
-    if not request.forms.get('item_id'):
-        return 'missing item id'
-    item_id = request.forms.get('item_id')
-    if len(item_id) != 36:
-        return 'invalid item id'
-    cart = db(db.cart.cart_id == session['uuid']).select().first()
-    if not cart:
-        return 'cart not found'
-    items = cart['item_list']
-    result_list = [x for x in items if x != item_id]
-  
-
-    cart.update_record(item_list=result_list)
+    if not request.forms.get('product_id'):
+        return 'missing product id'
+    product_id = request.forms.get('product_id')
+    if len(product_id) != 36:
+        return 'invalid product id'
+    if db(db.cart.cart_id == session['uuid']).isempty():
+        return dict(error='cart not found')
+    
+    db((db.cart.cart_id == session['uuid']) & (db.cart.product_id == product_id)).delete()
     
     return dict(msg='deleted')
 
+
+@action("pay_now", method=['GET'])
+@action.uses('pay_now.html',session, db, auth, url_signer, url_signer.verify())
+def pay_now():
+
+
+
+    return dict(
+                get_products_url=URL("get_products", signer=url_signer),
+                cart_list_url = URL("cart_list", signer=url_signer),
+                delete_item_cart_url = URL("delete_item_cart", signer=url_signer),
+                )
 
 
 ######## Admin functions ###########
@@ -207,21 +207,21 @@ def delete_item_cart():
 @action('admin/<path:path>', method=['POST', 'GET'])
 @action.uses("admin.html", session, db, auth )
 def admin(path=None):
-    form_items = Form(db.item, _formname='form_items')
+    form_items = Form(db.product, _formname='form_items')
     form_groups = Form(db.groups, _formname='form_groups')
-    items = db(db.item).select()
+    items = db(db.product).select()
     groups = db(db.groups).select()
 
     grid = Grid(path,
             formstyle=FormStyleBulma, # FormStyleDefault or FormStyleBulma
             grid_class_style=GridClassStyleBulma, # GridClassStyle or GridClassStyleBulma
-            query=(db.item.id > 0),
-            orderby=[db.item.name],
-            search_queries=[['Search by Name', lambda val: db.item.name.contains(val)]])
-    db.item.rand_id.default = str(uuid.uuid4())
-    db.item.rand_id.readable = False
-    db.item.rand_id.writable = False
-    form_add_item = Form(db.item,
+            query=(db.product.id > 0),
+            orderby=[db.product.name],
+            search_queries=[['Search by Name', lambda val: db.product.name.contains(val)]])
+    db.product.rand_id.default = str(uuid.uuid4())
+    db.product.rand_id.readable = False
+    db.product.rand_id.writable = False
+    form_add_item = Form(db.product,
         formname='form_add_item',
         formstyle=FormStyleBulma,
 
@@ -243,12 +243,12 @@ def admin(path=None):
         #form_obj['description'] = form_add_item.vars.get('description')
         #form_obj['price'] = form_add_item.vars.get('price')
 
-        #db.item.insert(**form_obj)
+        #db.product.insert(**form_obj)
         redirect(URL('admin'))
 
     return dict(form_add_item=form_add_item, form_items=form_items, items=items,
                 form_groups=form_groups, groups=groups,
-               delete_item_url=URL("delete_item", signer=url_signer),)
+               delete_item_url=URL("delete_item", signer=url_signer),grid=grid)
 
 """
 @action("formm", method=["GET", "POST"])
@@ -270,11 +270,11 @@ def edit_form():
 @action("edit_item/<id>", method=["GET", "POST"])
 @action.uses("form_edit.html", session, db, auth) #url_signer.verify())
 def edit_item(id=None):
-    record = db(db.item.rand_id == id).select().first()
+    record = db(db.product.rand_id == id).select().first()
     print(record)
     if not record:
         redirect(URL('admin'))
-    form_edit = Form(db.item, record.id,
+    form_edit = Form(db.product, record.id,
                      _formname='form_edit_item',
                     formstyle=FormStyleBulma,
                     )
@@ -292,5 +292,5 @@ def delete_item(id=None):
     #item_id = request.forms.get('item_id')
     #if len(item_id) != 36:
     #    return 'invalid item id'
-    #db(db.item.id > 28).delete()
+    #db(db.product.id > 28).delete()
     redirect(URL('admin'))

@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Bulma is a free, open source CSS framework based on Flexbox and built with Sass. It's 100% responsive, fully modular, and available for free.">
+
+    <title>Japan Kiosk</title>
+    <link rel="stylesheet" href="[[=URL('static','css/bulma.css')]]">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="[[=URL('static','logo_notext.png')]]">
+    <link rel="icon" type="image/png" href="[[=URL('static','logo_notext.png')]]" sizes="32x32">
+    <link rel="stylesheet" href="[[=URL('static','css/all.min.css')]]">
+
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:400,700" media="all"> -->
+
+  <script src="[[=URL('static','js/vue.global.js')]]"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.dataTables.min.css">
+  <style>
+    body {
+    background-image: url('/kiosk/static/fondo1.png');
+    }
+    .modal-card {
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
+        width: 90vw;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .modal-card-head, .modal-card-foot {
+        padding: 15px;
+    }
+
+    .modal-card-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .carousel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        max-height: 50vh;
+        object-fit: contain;
+    }
+
+    .carousel-button {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #3273dc;
+        transition: color 0.3s;
+    }
+
+    .carousel-button:hover {
+        color: #00d1b2;
+    }
+
+    .description {
+        margin-bottom: 1rem;
+    }
+
+    .price {
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    @media screen and (max-width: 768px) {
+        .modal-card {
+            width: 95vw;
+        }
+
+        .columns {
+            flex-direction: column;
+        }
+
+        .column {
+            width: 100%;
+        }
+    }
+    </style>
+  [[block page_head]] [[end]]
+</head>
+
+<body >
+    <div id="app">
+        [[include 'navbar.html']]
+        <br>
+      <div class="container">
+
+
+            [[include]]
+
+
+      </div>
+      [[include 'footer.html']]
+    </div>
+
+
+    <!--Py4web utils -->
+    [[block page_scripts]]<!-- individual pages can add scripts here -->
+
+    <script>
+        cart_list_url = '[[=XML(cart_list_url)]]'
+        delete_item_cart_url = '[[=XML(delete_item_cart_url)]]'
+
+    </script>
+
+    <script src="[[=URL('static','js/axios.min.js')]]"></script>
+    <script>
+      [[include 'js/app_checkout.js']]
+    </script>
+    <script src="[[=URL('static','js/utils.js')]]"></script>
+
+    [[end]]
+  </body>
+
+
+
+
+
+
+    </html>

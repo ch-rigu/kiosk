@@ -31,7 +31,6 @@ function focusOut(id) {
 
 
 
-
 const vue_app = Vue.createApp({
   data() {
     return {

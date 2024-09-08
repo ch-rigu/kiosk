@@ -78,8 +78,16 @@ document.addEventListener('DOMContentLoaded', () => {
 const vue_app = Vue.createApp({
   data() {
     return {
+      pay_now_url: pay_now_url,
       cart_count: 0,
       searchValue:'',
+      shippingDetails: {
+        name: '',
+        lastName: '',
+        address: '',
+        city: '',
+        details: ''
+    },
       colors: [['primary','is-primary'],
                ['link','is-link'],
                ['info','is-info'],
@@ -96,8 +104,8 @@ const vue_app = Vue.createApp({
                ['danger','is-danger is-light'],
                ['light','is-light is-light'],
               ],
-      //items = [],
-      items: [{'name': 'loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'loading products'},
+      //products = [],
+      products: [{'name': 'loading products', 'price': 0, 'tags': ['',''], 'id':'xxx-xxx-kitsune','description':'loading products'},
              ],
       shopping_cart: [{'rand_id':'','name': '', 'quantity': '', 'price':'', 'image':''}],
       shopping_total: 0,
@@ -116,11 +124,23 @@ const vue_app = Vue.createApp({
     }
   },
   computed: {
-        chunkedItems() {
-            return this.chunkArray(this.items, 3);
+        chunkedproducts() {
+            return this.chunkArray(this.products, 3);
         }
     },
     methods: {
+      handleCheckout() {
+        // Handle checkout logic here
+        console.log('Order confirmed', this.shippingDetails);
+    },
+    payWithBankTransfer() {
+        // Payment logic for bank transfer
+        console.log('Paying with Bank Transfer');
+    },
+    payWithWeepy() {
+        // Payment logic for Weepy
+        console.log('Paying with Weepy');
+    },
         searchProduct(product) {
             this.loadingSearch = true
             axios.post(search_product_url, {
@@ -128,8 +148,8 @@ const vue_app = Vue.createApp({
             })
             .then(response => {
               this.loadingSearch = false
-              this.items = response.data.items;
-              console.log(this.items)
+              this.products = response.data.products;
+              console.log(this.products)
           })
           .catch(error => {
               this.loadingSearch = false
@@ -150,7 +170,7 @@ const vue_app = Vue.createApp({
     },
       productModal(position) {
         console.log(position)
-        this.product = this.items[position];
+        this.product = this.products[position];
         this.currentImageIndex = 0; // Reiniciar el índice de la imagen al abrir el modal
         const modal = document.getElementById("modal-product");
         modal.classList.add('is-active'); // Abrir el modal
@@ -159,11 +179,11 @@ const vue_app = Vue.createApp({
         const modal = document.getElementById("modal-product");
         modal.classList.remove('is-active'); // Cerrar el modal
     },
-      getItems() {
-          axios.get(get_items_url)
+      getproducts() {
+          axios.get(get_products_url)
           .then(response => {
-              this.items = response.data.items;
-              console.log(this.items)
+              this.products = response.data.products;
+              console.log(this.products)
           })
           .catch(error => {
               alert(error)
@@ -177,19 +197,19 @@ const vue_app = Vue.createApp({
           }
           return result;
       },
-      add_to_cart(item_id){
+      add_to_cart(product_id){
           axios.post(add_item_to_cart_url,{
-                  'item_id':item_id,
+                  'product_id':product_id,
                   })
           .then(response => {
               if (response.data.msg ==='added') {
-                  //this.cart_items.push(item_id)
-                  //alert(this.cart_items)
+                  //this.cart_products.push(product_id)
+                  //alert(this.cart_products)
                   this.cart_listing('count')
                   //document.getElementById("cart_counter").innerText = this.cart_count
               }
               else {
-                  alert(response.data.msg)
+                  alert(response.data.error)
               }
           })
           .catch(error => {
@@ -202,19 +222,15 @@ const vue_app = Vue.createApp({
             'get':action})
             .then(response => {
                 if (action === 'all') {
-                    this.shopping_cart =  response.data
+                    this.shopping_cart =  response.data.products
                     for (const [key, value] of Object.entries(this.shopping_cart)) {
-                      
-                      this.shopping_total += value.final_price
-
+                      this.shopping_total += parseInt(value.final_price)
                     }
                  
-                
-
                 } else {
-                    //alert(response.data.items)
-                    //this.cart_count = response.data.items
-                    document.getElementById("cart_counter").innerText = response.data.items
+                    //alert(response.data.products)
+                    //this.cart_count = response.data.products
+                    document.getElementById("cart_counter").innerText = response.data.products
                 }
                 
             })
@@ -230,17 +246,18 @@ const vue_app = Vue.createApp({
           });
           return formatter.format(value);
         },
-        deleteItemCart(item_id){
-          console.log(item_id)
+        deleteproductCart(product_id){
+          console.log(product_id)
           console.log(this.shopping_cart)
           
           axios.post(delete_item_cart_url,{
-                  'item_id':item_id,
+                  'product_id':product_id,
                   })
           .then(response => {
               if (response.data.msg ==='deleted') {
-                delete this.shopping_cart[item_id]
-                  //alert(this.cart_items)
+                this.shopping_total -= parseInt(this.shopping_cart[product_id].final_price)
+                delete this.shopping_cart[product_id]
+                  //alert(this.cart_products)
                 this.cart_listing('count')
                   
                   //document.getElementById("cart_counter").innerText = this.cart_count
@@ -257,14 +274,14 @@ const vue_app = Vue.createApp({
     },
 
 beforeMount() {
-  this.getItems();
+  this.getproducts();
 
 
 
 },
 
 mounted() {
-    this.cart_listing();
+    this.cart_listing('count');
   //this.changeSize();
   //this.renderHorizontalBarChart();
   
