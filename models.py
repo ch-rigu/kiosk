@@ -43,13 +43,32 @@ db.define_table('product',
 
 # db.item.final_price.writable=False
 
+
+db.define_table('cart_summary',
+                Field('cart_id', 'string', requires=IS_NOT_EMPTY()),
+                Field('customer_name', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_lastname', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_email', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_rut', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_address', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_address_details', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_phone', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_region', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_comuna', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('customer_message', 'string', default='', requires=IS_NOT_EMPTY()),
+                Field('created_at', 'datetime', requires=IS_NOT_EMPTY()),
+                Field('status', 'string', requires=IS_NOT_EMPTY()),
+
+)
+
+
 db.define_table('cart',
                 Field('cart_id', 'string', requires=IS_NOT_EMPTY()),
                 Field('product_id', 'string', requires=IS_IN_DB(db, 'product.rand_id', '%(name)s')),
                 Field('quantity', 'integer', requires=IS_NOT_EMPTY()),
-                  
-               )
+                
 
+               )
 
 
 db.commit()

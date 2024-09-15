@@ -1,0 +1,42 @@
+[[extend 'layout_admin.html']]
+<hr>
+<div class="section">
+    
+
+    <div class="box">
+        <a class="button" href="[[=URL('admin')]]"> <i class="fa fa-arrow-left"></i> Volver</a>
+    <h2 class="title is-2"></h2>
+    <table class="table is-striped is-hoverable is-fullwidth" id="product_table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th><Em></Em>mail</th>
+            <th>Estado</th>
+            <th>Cantidad de productos</th>
+            <th>Precio Total</th>
+            <th>Fecha de creación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead> 
+        <tbody>
+           [[for cart in cart_list:]]
+          <tr>
+      
+            <td>[[=cart['customer_name'] ]] [[=cart['customer_lastname'] ]]  </td>
+            <td>[[=cart['customer_email'] ]]</td>
+            <td>xx</td>
+            <td>xx </td>
+            <td>xx </td>
+            <td>[[=cart['created_at'] ]]</td>
+              <td>
+                <div class="buttons">
+                    <a class="button is-default is-small" href="[[=URL('cart_inspect', cart['cart_id'] )]]">Ver</a>
+                    <a class="button is-default is-small" href="[[=URL('delete_cart', cart['cart_id'] )]]">Borrar</a>
+                </div>
+            </td>
+          </tr>
+           [[pass]]
+         </tbody>
+      </table>
+    </div>
+</div>

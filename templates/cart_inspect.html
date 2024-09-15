@@ -1,0 +1,74 @@
+[[extend 'layout_admin.html']]
+<hr>
+<div class="section">
+    
+
+    <div class="box">
+        <a class="button" href="[[=URL('admin')]]"> <i class="fa fa-arrow-left"></i> Volver</a>
+        <h2 class="title is-2"></h2>
+        <article class="message">
+            <div class="message-header">
+              <p>Informacion de cliente</p>
+              <button class="delete" aria-label="delete"></button>
+            </div>
+            <div class="message-body">
+              
+                <p>Nombre: [[=cart_info['customer_name'] ]] [[=cart_info['customer_lastname'] ]]</p>
+                <p>Email: [[=cart_info['customer_email'] ]]</p>
+                <p>Rut: [[=cart_info['customer_rut'] ]]</p>
+                <p>Teléfono: [[=cart_info['customer_phone'] ]]</p>
+                <p>Dirección: [[=cart_info['customer_address'] ]]</p>
+                <p>Región: [[=cart_info['customer_region'] ]]</p>
+                <p>Comuna: [[=cart_info['customer_comuna'] ]]</p>
+                
+            </div>
+          </article>
+ 
+        <hr>
+        
+        <article class="message">
+            <div class="message-header">
+              <p>Productos</p>
+            </div>
+            <div class="message-body">
+              
+                <table class="table is-striped is-bordered is-hoverable is-fullwidth" id="">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>img</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        
+                    </tr>
+                    </thead> 
+                    <tbody>
+                    [[for item in cart_list:]]
+                    <tr>
+                        <td>[[=item['id'] ]]  </td>
+                        <td>[[=item['product_name'] ]]  </td>
+                        <td>
+                            <figure class="image is-64x64">
+                                <img class="is-rounded" src="[[=URL('static/media/', item['product_image']) ]]" />
+                            </figure>
+                            </td>
+                        <td>[[=item['quantity'] ]]</td>
+                        <td>[[=item['product_final_price'] ]]</td>            
+                    </tr>
+                    
+                    [[pass]]
+                    <tr></tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Total</td>
+                        <td>xxxx</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+          </article>
+       
+    </div>
+</div>

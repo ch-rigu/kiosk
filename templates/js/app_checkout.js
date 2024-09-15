@@ -6,16 +6,16 @@ const vue_app = Vue.createApp({
         empty_value: {'nombre': false, 'apellido': false, 'rut': false, 'email': false, 'telefono': false, 'direccion': false, 'region': false, 'comuna': false},
         products: [],
           shippingDetails: {
-              name: '',
-              lastName: '',
-              rut: '',
-              email: '',
-              phone: '',
-              address: '',
-              addressDetail: '',
-              region: '',
-              comuna: '',
-              details: ''
+              customer_name: '[[=cart_info['customer_name'] ]]',
+              customer_lastname: '[[=cart_info['customer_lastname'] ]]',
+              customer_rut: '[[=cart_info['customer_rut'] ]]',
+              customer_email: '[[=cart_info['customer_email'] ]]',
+              customer_phone: '[[=cart_info['customer_phone'] ]]',
+              customer_address:  '[[=cart_info['customer_address'] ]]',
+              customer_address_details: '[[=cart_info['customer_address_details'] ]]',
+              customer_region: '[[=cart_info['customer_region'] ]]',
+              customer_comuna: '[[=cart_info['customer_comuna'] ]]',
+              customer_message: '[[=cart_info['customer_message'] ]]',
           },
         shopping_cart: [],
         shopping_total: 0,
@@ -56,48 +56,48 @@ const vue_app = Vue.createApp({
     },
     validaForm(){
       
-      if (this.shippingDetails.name.length < 3){
+      if (this.shippingDetails.customer_name.length < 3){
         this.empty_value.nombre = true
         console.log('nombre vacio')
         return
       }
-      if (this.shippingDetails.lastName.length < 3){
+      if (this.shippingDetails.customer_lastname.length < 3){
         this.empty_value.apellido = true
         console.log('apellido vacio')
         return
 
       }
-      if (this.shippingDetails.rut.length < 9 ) {
+      if (this.shippingDetails.customer_rut.length < 9 ) {
         this.empty_value.rut = true
         console.log('rut vacio')
         return
       }
-      if (!this.shippingDetails.rut.includes('-')){
+      if (!this.shippingDetails.customer_rut.includes('-')){
         this.empty_value.rut = true
         console.log('rut sin guion')
         return
       }
-      if (this.shippingDetails.email === '' || !this.shippingDetails.email.includes('@')){
+      if (this.shippingDetails.customer_email === '' || !this.shippingDetails.customer_email.includes('@')){
         this.empty_value.email = true
         console.log('email vacio')
         return
       }
-      if (this.shippingDetails.phone === '' || this.shippingDetails.phone.length < 9){
+      if (this.shippingDetails.customer_phone === '' || this.shippingDetails.customer_phone.length < 9){
         this.empty_value.phone = true
         console.log('telefono vacio')
         return
       }
-      if (this.shippingDetails.direccion === ''){
+      if (this.shippingDetails.customer_address === ''){
         this.empty_value.direccion = true
         console.log('direccion vacioo')
         return
       }
-      if (this.shippingDetails.region === ''){
+      if (this.shippingDetails.customer_region === ''){
         this.empty_value.region = true
         console.log('region vacio')
         return 
       }
-      if (this.shippingDetails.comuna === ''){
+      if (this.shippingDetails.customer_comuna === ''){
         this.empty_value.comuna = true
         console.log('comuna vacio')
         return
@@ -105,6 +105,36 @@ const vue_app = Vue.createApp({
       for (const [key, value] of Object.entries(this.empty_value)) {
         this.empty_value[key] = false
       }
+      
+      axios.post(cart_info_url, {
+        'customer_name': this.shippingDetails.customer_name,
+        'customer_lastname': this.shippingDetails.customer_lastname,
+        'customer_rut': this.shippingDetails.customer_rut,
+        'customer_email': this.shippingDetails.customer_email,
+        'customer_phone': this.shippingDetails.customer_phone,
+        'customer_address': this.shippingDetails.customer_address,
+        'customer_address_details': this.shippingDetails.customer_address_details,
+        'customer_region': this.shippingDetails.customer_region,
+        'customer_comuna': this.shippingDetails.customer_comuna,
+        'customer_message': this.shippingDetails.customer_message,
+
+      })
+        .then(response => {
+            if (action === 'all') {
+                this.shopping_cart =  response.data.products
+                
+                for (const [key, value] of Object.entries(this.shopping_cart)) {
+                  this.shopping_total += parseInt(value.final_price)
+                }
+             
+            } else {
+                //alert(response.data.products)
+                //this.cart_count = response.data.products
+                document.getElementById("cart_counter").innerText = response.data.products
+            }
+            
+        })
+
       this.show_payment = true
     },
     toCurrency(value) {

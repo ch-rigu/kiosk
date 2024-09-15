@@ -14,7 +14,7 @@
                     <div class="field">
                         <label class="label">Nombre</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="Your Name" v-model="shippingDetails.name" required>
+                            <input class="input" type="text" placeholder="Your Name" v-model="shippingDetails.customer_name" required>
                             <p class="help is-danger" v-show="empty_value.nombre" >Ingrese este campo</p>
 
                         </div>
@@ -24,7 +24,7 @@
                     <div class="field">
                         <label class="label">Correo electrónico</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="ingresa tu email" v-model="shippingDetails.email" required>
+                            <input class="input" type="text" placeholder="ingresa tu email" v-model="shippingDetails.customer_email" required>
                             <p class="help is-danger" v-show="empty_value.email" >Ingrese este campo</p>
 
                         </div>
@@ -34,7 +34,7 @@
                     <div class="field">
                         <label class="label">Dirección</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="Ingresa la dirección para despacho" v-model="shippingDetails.address" required>
+                            <input class="input" type="text" placeholder="Ingresa la dirección para despacho" v-model="shippingDetails.customer_address" required>
                             <p class="help is-danger" v-show="empty_value.direccion" >Ingrese este campo</p>
 
                         </div>
@@ -44,7 +44,7 @@
                     <div class="field">
                         <label class="label">Region</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="Santiago" v-model="shippingDetails.region" required>
+                            <input class="input" type="text" placeholder="Santiago" v-model="shippingDetails.customer_region" required>
                             <p class="help is-danger" v-show="empty_value.region" >Ingrese este campo</p>
 
                         </div>
@@ -52,7 +52,7 @@
                     <div class="field">
                         <label class="label">Comuna</label>
                         <div class="control">
-                            <input class="input" type="text" placeholder="ingresar comuna" v-model="shippingDetails.comuna" required>
+                            <input class="input" type="text" placeholder="ingresar comuna" v-model="shippingDetails.customer_comuna" required>
                             <p class="help is-danger" v-show="empty_value.comuna" >Ingrese este campo</p>
 
                         </div>
@@ -66,7 +66,7 @@
                         <div class="field">
                             <label class="label">Apellido</label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="apellido" v-model="shippingDetails.lastName" required>
+                                <input class="input" type="text" placeholder="apellido" v-model="shippingDetails.customer_lastname" required>
                                 <p class="help is-danger" v-show="empty_value.apellido" >Ingrese este campo</p>
 
                             </div>
@@ -74,7 +74,7 @@
                         <div class="field">
                         <label class="label"> RUT</label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="11111111-1" v-model="shippingDetails.rut" required>
+                                <input class="input" type="text" placeholder="11111111-1" v-model="shippingDetails.customer_rut" required>
                                 <p class="help is-danger" v-show="empty_value.rut" >Ingrese este campo</p>
 
                             </div>
@@ -83,7 +83,7 @@
                         <div class="field">
                             <label class="label">Teléfono de contacto</label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="ingresa tu número telefónico" v-model="shippingDetails.phone" required>
+                                <input class="input" type="text" placeholder="ingresa tu número telefónico" v-model="shippingDetails.customer_phone" required>
                                 <p class="help is-danger" v-show="empty_value.phone" >Ingrese este campo</p>
 
                             </div>
@@ -91,7 +91,7 @@
                         <div class="field">
                             <label class="label">Casa o departamento</label>
                             <div class="control">
-                                <input class="input" type="text" placeholder="Casa Nº, Depto Nº" v-model="shippingDetails.addressDetail" required>
+                                <input class="input" type="text" placeholder="Casa Nº, Depto Nº" v-model="shippingDetails.customer_address_details" required>
                                 <p class="help is-danger" v-show="empty_value.addressDetail" >Ingrese este campo</p>
 
                             </div>
@@ -99,7 +99,7 @@
                         <div class="field">
                             <label class="label">Comentario</label>
                             <div class="control">
-                                <textarea class="textarea" placeholder="Any other details..." v-model="shippingDetails.details"></textarea>
+                                <textarea class="textarea" placeholder="Any other details..." v-model="shippingDetails.customer_message"></textarea>
                             </div>
                         </div>
 

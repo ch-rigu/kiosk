@@ -733,3 +733,132 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2024-09-15T15:02:24.654465
+ALTER TABLE "cart" ADD "customer_name" CHAR(512);
+timestamp: 2024-09-15T15:02:24.657770
+ALTER TABLE "cart" ADD "customer_lastname" CHAR(512);
+timestamp: 2024-09-15T15:02:24.660586
+ALTER TABLE "cart" ADD "customer_email" CHAR(512);
+timestamp: 2024-09-15T15:02:24.663257
+ALTER TABLE "cart" ADD "customer_rut" CHAR(512);
+timestamp: 2024-09-15T15:02:24.667852
+ALTER TABLE "cart" ADD "customer_address" CHAR(512);
+timestamp: 2024-09-15T15:02:24.672714
+ALTER TABLE "cart" ADD "customer_phone" CHAR(512);
+success!
+success!
+success!
+timestamp: 2024-09-15T15:19:21.552527
+ALTER TABLE "cart" ADD "created_at" TIMESTAMP;
+success!
+success!
+timestamp: 2024-09-15T15:27:53.437165
+CREATE TABLE "cart_summary"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "cart_id" CHAR(512),
+    "customer_name" CHAR(512),
+    "customer_lastname" CHAR(512),
+    "customer_email" CHAR(512),
+    "customer_rut" CHAR(512),
+    "customer_address" CHAR(512),
+    "customer_phone" CHAR(512),
+    "created_at" TIMESTAMP
+);
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2024-09-15T15:34:38.186620
+ALTER TABLE "cart_summary" ADD "status" CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2024-09-15T18:02:47.502488
+ALTER TABLE "cart_summary" ADD "customer_region" CHAR(512);
+timestamp: 2024-09-15T18:02:47.513407
+ALTER TABLE "cart_summary" ADD "customer_comuna" CHAR(512);
+success!
+success!
+success!
+timestamp: 2024-09-15T18:35:26.779345
+ALTER TABLE "cart_summary" ADD "customer_address_details" CHAR(512);
+success!
+success!
+timestamp: 2024-09-15T18:53:53.300518
+ALTER TABLE "cart_summary" ADD "customer_message" CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

@@ -1,6 +1,6 @@
 from py4web import action, request, abort, redirect, URL
 from py4web.utils.form import Form, FormStyleBulma
-from py4web.utils.grid import Grid, GridClassStyleBulma
+from py4web.utils.grid import Grid, GridClassStyleBulma, Column
 from yatl.helpers import A
 from pydal.tools.tags import Tags
 from py4web.utils.url_signer import URLSigner
@@ -18,7 +18,7 @@ from .common import (
 )
 from pydal.validators import *
 import uuid
-
+import datetime
 
 groups = Tags(db.auth_user)
 url_signer = URLSigner(session)
@@ -36,7 +36,24 @@ def carts():
 def delcart():
     #print(dir(session.items()))
     db(db.cart).delete()
+    db(db.cart_summary).delete()
     return 'ok'
+
+
+def validate_json_post(data, required_fields):
+    
+    print(data)
+    
+    if not data:
+        return {'error': 'invalid request'}
+    
+    for field in required_fields:
+        print(field)
+        if field not in data.keys():
+            return {'error': f'missing {field}'}
+    
+    return None  # Si no hay errores, retorna None
+
 
 @action("index", method=['GET'])
 @action.uses("index.html", session, db, auth, url_signer)
@@ -131,8 +148,11 @@ def add_item_to_cart():
         return dict(msg="nok", error='invalid item or out of stock')
 
     #update cart
-    cart_items = db(db.cart.cart_id == session['uuid']).isempty()
+    if db(db.cart_summary.cart_id == session['uuid']).isempty():
+        db.cart_summary.insert(cart_id=session['uuid'],
+                               created_at=datetime.datetime.now())
 
+    cart_items = db(db.cart.cart_id == session['uuid']).isempty()
     if cart_items:
         
         
@@ -156,6 +176,7 @@ def add_item_to_cart():
             
             item.update_record(quantity=item['quantity'] + 1)
         else:
+            
             db.cart.insert(cart_id=session['uuid'],
                             product_id=product_id,
                             quantity=1
@@ -192,32 +213,83 @@ def delete_item_cart():
 @action.uses('pay_now.html',session, db, auth, url_signer, url_signer.verify())
 def pay_now():
 
+    if not 'uuid' in session.keys():
+        return 'missing session'
+    
+    cart_info = db(db.cart_summary.cart_id == session['uuid']).select().first()
+    if not cart_info:
 
-
+        cart_info = {
+            'customer_name': '',
+            'customer_lastname': '',
+            'customer_email': '',
+            'customer_rut': '',
+            'customer_address': '',
+            'customer_address_details': '',
+            'customer_phone': '',
+            'customer_region': '',
+            'customer_comuna': '',
+            'customer_message': '',
+        }
+        
     return dict(
                 get_products_url=URL("get_products", signer=url_signer),
                 cart_list_url = URL("cart_list", signer=url_signer),
                 delete_item_cart_url = URL("delete_item_cart", signer=url_signer),
+                cart_info_url = URL("cart_info_save", signer=url_signer),
+                cart_info=cart_info,
                 )
 
+
+@action("cart_info_save", method=['POST'])
+@action.uses(session, db, auth, url_signer, url_signer.verify())
+def cart_info_save():
+    
+    required_fields = [
+        'customer_name',
+        'customer_lastname',
+        'customer_email',
+        'customer_rut',
+        'customer_address',
+        'customer_phone',
+        'customer_region',
+        'customer_comuna',
+
+    ]
+    error = validate_json_post(request.json, required_fields)
+    if error:
+        return error
+    
+
+    db.cart_summary.update_or_insert(db.cart_summary.cart_id == session['uuid'],
+                                        customer_name=request.json['customer_name'],
+                                        customer_lastname=request.json['customer_lastname'],
+                                        customer_email=request.json['customer_email'],
+                                        customer_rut=request.json['customer_rut'],
+                                        customer_address=request.json['customer_address'],
+                                        customer_address_details=request.json['customer_address_details'],
+                                        customer_phone=request.json['customer_phone'],
+                                        customer_region=request.json['customer_region'],
+                                        customer_comuna=request.json['customer_comuna'],
+                                        customer_message=request.json['customer_message'],
+
+                                        created_at=datetime.datetime.now(),
+                                        status='created'
+    )
+
+    return dict(msg='ok')
 
 ######## Admin functions ###########
 
 @action("admin", method=["GET", "POST"])
-@action('admin/<path:path>', method=['POST', 'GET'])
 @action.uses("admin.html", session, db, auth )
 def admin(path=None):
     form_items = Form(db.product, _formname='form_items')
     form_groups = Form(db.groups, _formname='form_groups')
     items = db(db.product).select()
     groups = db(db.groups).select()
-
-    grid = Grid(path,
-            formstyle=FormStyleBulma, # FormStyleDefault or FormStyleBulma
-            grid_class_style=GridClassStyleBulma, # GridClassStyle or GridClassStyleBulma
-            query=(db.product.id > 0),
-            orderby=[db.product.name],
-            search_queries=[['Search by Name', lambda val: db.product.name.contains(val)]])
+    total_cart = db(db.cart_summary).count()
+ 
     db.product.rand_id.default = str(uuid.uuid4())
     db.product.rand_id.readable = False
     db.product.rand_id.writable = False
@@ -245,10 +317,13 @@ def admin(path=None):
 
         #db.product.insert(**form_obj)
         redirect(URL('admin'))
+    
+
 
     return dict(form_add_item=form_add_item, form_items=form_items, items=items,
                 form_groups=form_groups, groups=groups,
-               delete_item_url=URL("delete_item", signer=url_signer),grid=grid)
+               delete_item_url=URL("delete_item", signer=url_signer),
+               total_cart=total_cart)
 
 """
 @action("formm", method=["GET", "POST"])
@@ -283,6 +358,61 @@ def edit_item(id=None):
     if form_edit.deleted:
         redirect(URL('admin'))
     return dict(form_edit=form_edit)
+
+
+@action("cart_management", method=["GET"])
+@action.uses('cart_management.html', session, db, auth)
+def cart_management():
+    #print(dir(session.items()))
+    cart_list = db(db.cart_summary).select().as_list()
+    print(cart_list)
+    return dict(cart_list=cart_list)
+
+
+@action("cart_inspect/<rand_id>", method=["GET"])
+@action.uses('cart_inspect.html', session, db, auth)
+def cart_inspect(rand_id=None):
+    if not rand_id:
+        return 'missing cart id'
+    cart_info = db(db.cart_summary.cart_id == rand_id).select().first()
+    cart_list = db(db.cart.cart_id == rand_id).select().as_list()
+    
+    if not cart_info:
+        return 'invalid cart id'
+
+    for item in cart_list:
+        product = db(db.product.rand_id == item['product_id']).select().first()
+        item['product_name'] = product['name']
+        item['product_price'] = product['price']
+        item['product_image'] = product['image1']
+        item['product_discount'] = product['discount']
+        item['product_final_price'] = product['final_price']
+
+
+    return dict(cart_info=cart_info,cart_list=cart_list)
+
+
+
+
+
+
+
+
+@action("delete_cart")
+@action.uses(session, db, auth)#url_signer.verify())
+def delete_cart(id=None):
+    #if not request.forms.get('item_id'):
+    #    return 'missing item id'
+    #item_id = request.forms.get('item_id')
+    #if len(item_id) != 36:
+    #    return 'invalid item id'
+    #db(db.product.id > 28).delete()
+
+    db(db.cart.cart_id == id).delete()   
+    db(db.cart_summary.cart_id == id).delete()   
+
+
+    return 'ok'
 
 @action("delete_item/<id>")
 @action.uses(session, db, auth.user, )#url_signer.verify())
